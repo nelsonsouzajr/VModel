@@ -6,6 +6,8 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,77 +15,41 @@ class MainActivity : AppCompatActivity() {
     lateinit var btnDados: Button
     lateinit var btnMostrar: Button
 
-    var contador: Int = 0
-
+    lateinit var mViewModel: MainViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        logar(valor = "OnCreate")
 
         initDados()
-        initContador()
         initClick()
 
     }
 
-    override fun onStart() {
-        super.onStart()
-        logar(valor = "OnStart")
-    }
+    private fun initDados() {
+        mViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-    override fun onResume() {
-        super.onResume()
-        logar(valor = "OnResume")
-    }
+        txtContador = findViewById(R.id.txtContador)
+        btnDados = findViewById(R.id.btnDados)
+        btnMostrar = findViewById(R.id.btnMostrar)
 
-    override fun onPause() {
-        super.onPause()
-        logar(valor = "OnPause")
-
-    }
-
-    override fun onStop() {
-        super.onStop()
-        logar(valor = "OnStop")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        logar(valor = "OnDestroy")
-    }
-
-    private fun logar(tag: String = "Ciclo de Vida", valor: String){
-        Log.d(tag, valor)
-    }
-
-    private fun validaContador(){
-        if(contador > 5){
-            contador = 0
-        }
+        mViewModel.mContador.observe(this, Observer {valor ->
+            txtContador.setText(valor)
+        })
     }
 
     private fun initClick() {
        btnDados.setOnClickListener{
-           contador++
-           validaContador()
-           initContador()
+        mViewModel.Contador()
        }
         btnMostrar.setOnClickListener {
-            Toast.makeText(this,"Valor Contador: ${contador.toString()}" , Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext,"Valor Contador: ${mViewModel.mContador.value}" , Toast.LENGTH_SHORT).show()
         }
 
     }
 
-    private fun initContador() {
-        txtContador.setText(contador.toString())
-    }
 
-    private fun initDados() {
-        txtContador = findViewById(R.id.txtContador)
-        btnDados = findViewById(R.id.btnDados)
-        btnMostrar = findViewById(R.id.btnMostrar)
-    }
+
 }
